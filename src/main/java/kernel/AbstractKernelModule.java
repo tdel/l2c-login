@@ -10,7 +10,7 @@ abstract public class AbstractKernelModule {
         this.status = KernelModuleStatus.STOPED;
     }
 
-    public boolean start() {
+    public void start() throws Exception {
         if (this.status != KernelModuleStatus.STOPED) {
             throw new IllegalStateException("Kernel module must be stopped to be started !");
         }
@@ -21,12 +21,10 @@ abstract public class AbstractKernelModule {
         } catch (Exception e) {
             this.status = KernelModuleStatus.STOPED;
 
-            return false;
+            throw e;
         }
 
         this.status = KernelModuleStatus.RUNNING;
-
-        return true;
     }
 
     public boolean stop() {
@@ -48,11 +46,26 @@ abstract public class AbstractKernelModule {
         return true;
     }
 
-    abstract protected void onModuleStart();
+    abstract protected void onModuleStart() throws Exception;
     abstract protected void onModuleStop();
 
     protected final <T> T getKernelParameter(String _name) {
         return this.kernel.getConfigParam(_name);
     }
 
+    protected final Kernel getKernel() {
+        return this.kernel;
+    }
+
+    protected final void registerService(Object _service) {
+        this.kernel.registerService(_service);
+    }
+    protected <T> T getService(Class<T> _class) {
+        T service = (T) this.kernel.getService(_class);
+        if (null == service) {
+            throw new IllegalArgumentException("La classe " + _class.getName() + " n'est pas référencé en tant que service");
+        }
+
+        return service;
+    }
 }

@@ -26,9 +26,6 @@ public class AuthGameGuard extends AbstractInPacket {
 
     public void execute(ClientHandler _client) {
         if (_client.getSessionId() != this.sessionId) {
-
-            System.out.println("client session id " + _client.getSessionId() + " | request sessionid " + this.sessionId);
-
             _client.sendPacket(new LoginFail(LoginFail.LoginFailReason.REASON_ACCESS_FAILED));
             _client.disconnect();
 

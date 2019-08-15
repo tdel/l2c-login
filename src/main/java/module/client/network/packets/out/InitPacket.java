@@ -26,21 +26,21 @@ public class InitPacket extends AbstractOutPacket {
 
     @Override
     public void write(PacketWriter _writer) {
-        _writer.putByte(0x00); // init packet id
+        _writer.writeC(0x00); // init packet id
 
-        _writer.putInt(this.sessionId); // session id
-        _writer.putInt(0x0000c621); // protocol revision
+        _writer.writeD(this.sessionId); // session id
+        _writer.writeD(0x0000c621); // protocol revision
 
-        _writer.putBytes(this.publicKey); // RSA Public Key
+        _writer.writeB(this.publicKey); // RSA Public Key
 
         // Unknown
-        _writer.putInt(0x29DD954E);
-        _writer.putInt(0x77C39CFC);
-        _writer.putInt(0x97ADB620);
-        _writer.putInt(0x07BDE0F7);
+        _writer.writeD(0x29DD954E);
+        _writer.writeD(0x77C39CFC);
+        _writer.writeD(0x97ADB620);
+        _writer.writeD(0x07BDE0F7);
 
-        _writer.putBytes(this.blowfishKey); // BlowFish key
+        _writer.writeB(this.blowfishKey); // BlowFish key
 
-        _writer.putByte(0x00); // null termination ;)
+        _writer.writeC(0x00); // null termination ;)
     }
 }

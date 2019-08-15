@@ -8,7 +8,6 @@ import module.client.network.packets.AbstractInPacket;
 import module.client.network.packets.in.AuthGameGuard;
 import module.client.network.packets.in.RequestAuthLogin;
 import module.client.network.packets.in.RequestGameServerLogin;
-import module.client.repository.PlayerRepository;
 import module.client.security.PasswordSecurity;
 import module.client.service.playerlogin.PlayerLoginService;
 import module.client.service.GameServers;
@@ -41,7 +40,6 @@ public class ClientModule extends AbstractKernelModule {
 
     private void loadServices() throws Exception {
         this.registerService(new PasswordSecurity());
-        this.registerService(new PlayerRepository());
         this.registerService(new GameServers(this.getService(EntityManager.class)));
         this.registerService(new PlayerLoginService(
                 this.getService(PasswordSecurity.class),

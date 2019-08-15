@@ -5,7 +5,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import module.client.ClientModule;
-import module.client.network.model.Client;
 import module.client.network.packets.PacketReader;
 import module.client.network.packets.AbstractInPacket;
 import module.client.network.packets.in.AuthGameGuard;
@@ -27,7 +26,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     private static final Logger logger = LogManager.getLogger();
 
     private ClientModule module;
-    private Client client;
     private Channel channel;
 
     private SecretKey secretKey;
@@ -61,12 +59,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         super.channelActive(_ctx);
 
         this.channel = _ctx.channel();
-
         InetSocketAddress address = (InetSocketAddress) _ctx.channel().remoteAddress();
-
-        logger.info("hello : " + address.toString());
-
-        this.client = new Client();
 
         this.sendPacket(new InitPacket( this.scrambledRSAKeyPair.getScrambledModulus(), this.secretKey.getEncoded(), this.getSessionId()));
     }

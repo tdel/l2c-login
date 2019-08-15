@@ -23,8 +23,6 @@ public class ServersList extends AbstractOutPacket {
         _writer.writeC(1); // last id
 
         for (GameServer gs : this.gameservers) {
-            System.out.println(gs.getAddress());
-
             InetSocketAddress address = gs.getAddress();
 
             String[] split = address.getHostString().split("\\.");

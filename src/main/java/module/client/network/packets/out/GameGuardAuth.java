@@ -13,12 +13,12 @@ public class GameGuardAuth extends AbstractOutPacket {
 
     @Override
     public void write(PacketWriter _writer) {
-        _writer.putByte(0x0b);
-        _writer.putInt(this.response);
-        _writer.putInt(0x00);
-        _writer.putInt(0x00);
-        _writer.putInt(0x00);
-        _writer.putInt(0x00);
+        _writer.writeC(0x0b);
+        _writer.writeD(this.response);
+        _writer.writeD(0x00);
+        _writer.writeD(0x00);
+        _writer.writeD(0x00);
+        _writer.writeD(0x00);
     }
 
 }

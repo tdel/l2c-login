@@ -81,7 +81,6 @@ public class RequestAuthLogin extends AbstractInPacket {
 
             _client.sendPacket(packet);
 
-            //_client.sendPacket(new ServersList(this.gameServers.getLinkedGameServers()));
             return;
         }
 

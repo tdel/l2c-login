@@ -35,7 +35,7 @@ public class LoginFail extends AbstractOutPacket {
 
     @Override
     public void write(PacketWriter _writer) {
-        _writer.putByte(0x01);
-        _writer.putInt(this.reason.getCode());
+        _writer.writeC(0x01);
+        _writer.writeD(this.reason.getCode());
     }
 }

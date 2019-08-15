@@ -1,6 +1,6 @@
 package module.client.network.packets.out;
 
-import module.client.network.PacketWriter;
+import module.client.network.packets.PacketWriter;
 import module.client.network.packets.AbstractOutPacket;
 
 public class GameGuardAuth extends AbstractOutPacket {

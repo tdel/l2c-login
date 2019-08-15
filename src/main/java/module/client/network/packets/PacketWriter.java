@@ -1,4 +1,4 @@
-package module.client.network;
+package module.client.network.packets;
 
 import io.netty.buffer.ByteBuf;
 

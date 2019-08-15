@@ -3,7 +3,7 @@ package module.client.network.packets.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import module.client.network.PacketWriter;
+import module.client.network.packets.PacketWriter;
 import module.client.network.packets.AbstractOutPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

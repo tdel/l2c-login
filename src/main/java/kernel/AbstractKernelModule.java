@@ -33,13 +33,7 @@ abstract public class AbstractKernelModule {
         }
 
         this.status = KernelModuleStatus.STOPING;
-        try {
-            this.onModuleStop();
-        } catch (Exception e) {
-            this.status = KernelModuleStatus.STOPED;
-
-            return false;
-        }
+        this.onModuleStop();
 
         this.status = KernelModuleStatus.STOPED;
 
@@ -53,17 +47,13 @@ abstract public class AbstractKernelModule {
         return this.kernel.getConfigParam(_name);
     }
 
-    protected final Kernel getKernel() {
-        return this.kernel;
-    }
-
     protected final void registerService(Object _service) {
         this.kernel.registerService(_service);
     }
     protected <T> T getService(Class<T> _class) {
         T service = (T) this.kernel.getService(_class);
         if (null == service) {
-            throw new IllegalArgumentException("La classe " + _class.getName() + " n'est pas référencé en tant que service");
+            throw new IllegalArgumentException("Class " + _class.getName() + " is not a service");
         }
 
         return service;

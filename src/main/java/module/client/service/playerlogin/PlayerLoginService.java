@@ -1,8 +1,6 @@
 package module.client.service.playerlogin;
 
 import model.Account;
-import module.client.model.Player;
-import module.client.repository.PlayerRepository;
 import module.client.security.PasswordSecurity;
 
 import javax.persistence.EntityManager;

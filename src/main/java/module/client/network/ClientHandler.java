@@ -113,11 +113,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 return;
         }
 
-        packet.read(new PacketReader(in));
         logger.info("Executing " + packet.getClass());
 
         try {
-            packet.execute(this);
+            packet.execute(new PacketReader(in), this);
         } finally {
             // We always consider that we read whole packet.
             in.readerIndex(in.writerIndex());

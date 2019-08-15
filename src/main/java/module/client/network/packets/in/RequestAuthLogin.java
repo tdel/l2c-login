@@ -17,12 +17,6 @@ import java.util.Map;
 
 public class RequestAuthLogin extends AbstractInPacket {
 
-    private byte[] _raw;
-    private byte[] _raw2;
-    private int _connectionId;
-    private byte[] _gameGuard;
-    private boolean _newAuth;
-
     private PlayerLoginService loginService;
     private GameServers gameServers;
 
@@ -32,32 +26,28 @@ public class RequestAuthLogin extends AbstractInPacket {
     }
 
     @Override
-    public void read(PacketReader _reader) {
-        if (_reader.getReadableBytes() >= (128 + 128 + 4 + 16)) {
-            _raw = _reader.readB(128);
-            _raw2 = _reader.readB(128);
-            _connectionId = _reader.readD();
-            _gameGuard = _reader.readB(16);
-            _newAuth = true;
-        } else if (_reader.getReadableBytes() >= (128 + 4 + 16)) {
-            _raw = _reader.readB(128);
-            _connectionId = _reader.readD();
-            _gameGuard = _reader.readB(16);
-            _newAuth = false;
-        }
+    public void execute(PacketReader _reader, ClientHandler _client) {
 
-    }
-
-
-
-
-    @Override
-    public void execute(ClientHandler _client) {
+        byte[] raw;
+        byte[] raw2;
+        boolean newAuth;
 
         byte[] decrypted;
+        PrivateKey privateKey = _client.getScrambledRSAKeyPair().getPrivateKey();
 
         try {
-            decrypted = this.decryptContent(_client.getScrambledRSAKeyPair().getPrivateKey());
+            if (_reader.getReadableBytes() >= (128 + 128 + 4 + 16)) {
+                raw = _reader.readB(128);
+                raw2 = _reader.readB(128);
+                decrypted = this.decryptContent(privateKey, raw, raw2);
+                newAuth = true;
+            } else if (_reader.getReadableBytes() >= (128 + 4 + 16)) {
+                raw = _reader.readB(128);
+                decrypted = this.decryptContent(privateKey, raw);
+                newAuth = false;
+            } else {
+                throw new IllegalArgumentException();
+            }
         } catch (GeneralSecurityException e) {
             _client.sendPacket(new LoginFail(LoginFail.LoginFailReason.REASON_ACCESS_FAILED));
             _client.disconnect();
@@ -65,7 +55,10 @@ public class RequestAuthLogin extends AbstractInPacket {
             return;
         }
 
-        Map<String, String> parameters = this.extractParameters(decrypted);
+        int connectionId = _reader.readD();
+        byte[] gameGuard = _reader.readB(16);
+
+        Map<String, String> parameters = this.extractParameters(decrypted, newAuth);
         PlayerLoginResult result = this.loginService.tryLogin(parameters.get("login"), parameters.get("password"));
         if (!result.isSuccess()) {
             LoginFail packet = null;
@@ -87,20 +80,28 @@ public class RequestAuthLogin extends AbstractInPacket {
         _client.sendPacket(new ServersList(this.gameServers.getLinkedGameServers()));
     }
 
-    private byte[] decryptContent(PrivateKey _key) throws GeneralSecurityException {
-        byte[] decrypted = new byte[_newAuth ? 256 : 128];
+    private byte[] decryptContent(PrivateKey _key, byte[] _raw, byte[] _raw2) throws GeneralSecurityException {
+        byte[] decrypted = new byte[256];
 
         final Cipher rsaCipher = Cipher.getInstance("RSA/ECB/NoPadding");
         rsaCipher.init(Cipher.DECRYPT_MODE, _key);
         rsaCipher.doFinal(_raw, 0, 128, decrypted, 0);
-        if (_newAuth) {
-            rsaCipher.doFinal(_raw2, 0, 128, decrypted, 128);
-        }
+        rsaCipher.doFinal(_raw2, 0, 128, decrypted, 128);
 
         return decrypted;
     }
 
-    private Map<String, String> extractParameters(byte[] _decrypted) {
+    private byte[] decryptContent(PrivateKey _key, byte[] _raw) throws GeneralSecurityException {
+        byte[] decrypted = new byte[128];
+
+        final Cipher rsaCipher = Cipher.getInstance("RSA/ECB/NoPadding");
+        rsaCipher.init(Cipher.DECRYPT_MODE, _key);
+        rsaCipher.doFinal(_raw, 0, 128, decrypted, 0);
+
+        return decrypted;
+    }
+
+    private Map<String, String> extractParameters(byte[] _decrypted, boolean _newAuth) {
 
         final String login;
         final String password;
@@ -120,7 +121,6 @@ public class RequestAuthLogin extends AbstractInPacket {
         params.put("login", login);
         params.put("password", password);
         params.put("ncotp", String.valueOf(ncotp));
-
 
         return params;
     }

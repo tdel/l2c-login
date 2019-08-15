@@ -2,6 +2,7 @@ package kernel;
 
 import model.Account;
 import module.client.ClientModule;
+import module.client.security.BlowfishGenerator;
 import module.gameserver.GameServerModule;
 import model.GameServer;
 import org.apache.logging.log4j.LogManager;
@@ -74,6 +75,8 @@ public class Kernel {
 
     private void loadKernelServices() {
         this.loadHibernate();
+
+        this.registerService(BlowfishGenerator.getInstance());
     }
 
     private void loadConfiguration() {
@@ -82,7 +85,7 @@ public class Kernel {
     }
 
     public <T> T getConfigParam(String _name) {
-        if (false == this.configuration.containsKey(_name)) {
+        if (!this.configuration.containsKey(_name)) {
             throw new IllegalArgumentException("Parameter "+ _name + " does not exist");
         }
 
@@ -95,21 +98,17 @@ public class Kernel {
         this.modules.put(ClientModule.class, new ClientModule(this));
     }
 
-    public <T> T getModule(Class<T> _class) {
-        return (T) this.modules.get(_class);
-    }
     public <T> T getService(Class<T> _class) {
         return (T) this.services.get(_class);
     }
 
     public void registerService(Object _object) {
-        this.services.put(_object.getClass(), _object);
-        logger.info("Added " + _object.getClass());
+        this.registerService(_object.getClass(), _object);
     }
 
     public void registerService(Class _class, Object _object) {
         this.services.put(_class, _object);
-        logger.info("Added " + _object.getClass());
+        logger.info("Registered service : " + _object.getClass());
     }
 
 

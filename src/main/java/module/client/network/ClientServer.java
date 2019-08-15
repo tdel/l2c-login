@@ -1,13 +1,12 @@
 package module.client.network;
 
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import kernel.Kernel;
-import module.client.ClientModule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,15 +14,15 @@ public class ClientServer {
 
     private static final Logger logger = LogManager.getLogger();
 
-    private ClientModule module;
+    private ClientChannelInitializer channelInitializer;
     private int port;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
 
     private ChannelFuture channel;
 
-    public ClientServer(ClientModule _module, int _port) {
-        this.module = _module;
+    public ClientServer(int _port, ClientChannelInitializer _channelInitializer) {
+        this.channelInitializer = _channelInitializer;
         this.port = _port;
     }
 
@@ -36,7 +35,7 @@ public class ClientServer {
         ServerBootstrap b = new ServerBootstrap(); // (2)
         b.group(this.bossGroup, this.workerGroup)
                 .channel(NioServerSocketChannel.class) // (3)
-                .childHandler(new ClientChannelInitializer(this.module))
+                .childHandler(this.channelInitializer)
                 .option(ChannelOption.SO_BACKLOG, 128)          // (5)
                 .childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
         this.channel = b.bind(this.port);

@@ -3,28 +3,25 @@ package module.client;
 
 import kernel.AbstractKernelModule;
 import kernel.Kernel;
+import module.client.network.ClientChannelInitializer;
 import module.client.network.ClientServer;
 import module.client.network.packets.AbstractInPacket;
 import module.client.network.packets.in.AuthGameGuard;
 import module.client.network.packets.in.RequestAuthLogin;
 import module.client.network.packets.in.RequestGameServerLogin;
+import module.client.security.BlowfishGenerator;
 import module.client.security.PasswordSecurity;
 import module.client.service.playerlogin.PlayerLoginService;
 import module.client.service.GameServers;
 
 import javax.persistence.EntityManager;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ClientModule extends AbstractKernelModule {
 
     private ClientServer server;
-    private Map<Class, AbstractInPacket> packetsIn;
-
 
     public ClientModule(Kernel _kernel) {
         super(_kernel);
-        this.packetsIn = new HashMap<>();
     }
 
     @Override
@@ -32,9 +29,9 @@ public class ClientModule extends AbstractKernelModule {
         int port = this.getKernelParameter("module.player.server.port");
 
         this.loadServices();
-        this.loadPacketsIn();
 
-        this.server = new ClientServer(this, port);
+        ClientChannelInitializer channelInitializer = new ClientChannelInitializer(this.getKernel(), this.getService(BlowfishGenerator.class));
+        this.server = new ClientServer(port, channelInitializer);
         this.server.start();
     }
 
@@ -45,22 +42,13 @@ public class ClientModule extends AbstractKernelModule {
                 this.getService(PasswordSecurity.class),
                 this.getService(EntityManager.class)
         ));
+
+        this.registerService(new AuthGameGuard());
+        this.registerService(new RequestAuthLogin(this.getService(PlayerLoginService.class), this.getService(GameServers.class)));
+        this.registerService(new RequestGameServerLogin());
+
     }
 
-
-    private void loadPacketsIn() throws Exception {
-        this.addPacket(new AuthGameGuard());
-        this.addPacket(new RequestAuthLogin(this.getService(PlayerLoginService.class), this.getService(GameServers.class)));
-        this.addPacket(new RequestGameServerLogin());
-    }
-
-    private void addPacket(AbstractInPacket _packet) {
-        this.packetsIn.put(_packet.getClass(), _packet);
-    }
-
-    public <T> T getInPacket(Class _name) {
-        return (T) this.packetsIn.get(_name);
-    }
 
     @Override
     protected void onModuleStop() {

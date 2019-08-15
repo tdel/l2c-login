@@ -58,4 +58,8 @@ abstract public class AbstractKernelModule {
 
         return service;
     }
+
+    protected final Kernel getKernel() {
+        return this.kernel;
+    }
 }

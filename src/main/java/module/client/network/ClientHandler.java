@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import kernel.Kernel;
 import module.client.ClientModule;
 import module.client.network.packets.PacketReader;
 import module.client.network.packets.AbstractInPacket;
@@ -25,14 +26,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger logger = LogManager.getLogger();
 
-    private ClientModule module;
+    private Kernel kernel;
     private Channel channel;
 
     private SecretKey secretKey;
     private ScrambledRSAKeyPair scrambledRSAKeyPair;
 
-    public ClientHandler(ClientModule _module, SecretKey _secretKey, ScrambledRSAKeyPair _scrambledRSAKeyPair) {
-        this.module = _module;
+    public ClientHandler(Kernel _kernel, SecretKey _secretKey, ScrambledRSAKeyPair _scrambledRSAKeyPair) {
+        this.kernel = _kernel;
         this.secretKey = _secretKey;
         this.scrambledRSAKeyPair = _scrambledRSAKeyPair;
     }
@@ -94,15 +95,15 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         AbstractInPacket packet = null;
         switch (packetId) {
             case 0x07:
-                packet = this.module.getInPacket(AuthGameGuard.class);
+                packet = this.kernel.getService(AuthGameGuard.class);
                 break;
 
             case 0x00:
-                packet = this.module.getInPacket(RequestAuthLogin.class);
+                packet = this.kernel.getService(RequestAuthLogin.class);
                 break;
 
             case 0x02:
-                packet = this.module.getInPacket(RequestGameServerLogin.class);
+                packet = this.kernel.getService(RequestGameServerLogin.class);
                 break;
 
             default:

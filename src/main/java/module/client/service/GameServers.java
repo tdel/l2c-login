@@ -1,5 +1,6 @@
 package module.client.service;
 
+import com.google.inject.Inject;
 import model.GameServer;
 
 import javax.persistence.EntityManager;
@@ -10,6 +11,7 @@ public class GameServers {
 
     private EntityManager em;
 
+    @Inject
     public GameServers(EntityManager _em) {
         this.em = _em;
     }

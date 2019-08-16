@@ -30,25 +30,8 @@ public class ClientModule extends AbstractKernelModule {
     protected void onModuleStart() throws Exception {
         int port = this.getKernelParameter("module.player.server.port");
 
-        this.loadServices();
-
-        ClientChannelInitializer channelInitializer = new ClientChannelInitializer(this.getKernel(), this.getService(BlowfishGenerator.class));
-        this.server = new ClientServer(port, channelInitializer);
-        this.server.start();
-    }
-
-    private void loadServices() throws Exception {
-        this.registerService(new PasswordSecurity());
-        this.registerService(new GameServers(this.getService(EntityManager.class)));
-        this.registerService(new PlayerLoginService(
-                this.getService(PasswordSecurity.class),
-                this.getService(EntityManager.class)
-        ));
-
-        this.registerService(new AuthGameGuard());
-        this.registerService(new RequestAuthLogin(this.getService(PlayerLoginService.class), this.getService(GameServers.class)));
-        this.registerService(new RequestGameServerLogin());
-
+        this.server = this.getService(ClientServer.class);
+        this.server.start(port);
     }
 
 

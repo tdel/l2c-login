@@ -1,5 +1,6 @@
 package module.client.network.packets.in;
 
+import com.google.inject.Inject;
 import module.client.network.ClientHandler;
 import module.client.network.packets.AbstractInPacket;
 import module.client.network.packets.PacketReader;
@@ -20,6 +21,7 @@ public class RequestAuthLogin extends AbstractInPacket {
     private PlayerLoginService loginService;
     private GameServers gameServers;
 
+    @Inject
     public RequestAuthLogin(PlayerLoginService _loginService, GameServers _gameServers) {
         this.loginService = _loginService;
         this.gameServers = _gameServers;

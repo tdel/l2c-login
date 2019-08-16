@@ -1,5 +1,7 @@
 package module.client.security;
 
+import com.google.inject.Inject;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -9,6 +11,7 @@ public class PasswordSecurity {
 
     private MessageDigest digest;
 
+    @Inject
     public PasswordSecurity() throws NoSuchAlgorithmException {
         this.digest = MessageDigest.getInstance("SHA-256");
     }

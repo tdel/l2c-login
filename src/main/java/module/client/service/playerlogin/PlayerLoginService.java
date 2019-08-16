@@ -1,5 +1,6 @@
 package module.client.service.playerlogin;
 
+import com.google.inject.Inject;
 import model.Account;
 import module.client.security.PasswordSecurity;
 
@@ -11,6 +12,7 @@ public class PlayerLoginService {
     private PasswordSecurity passwordSecurity;
     private EntityManager em;
 
+    @Inject
     public PlayerLoginService(PasswordSecurity _passwordSecurity, EntityManager _em) {
         this.passwordSecurity = _passwordSecurity;
         this.em = _em;

@@ -3,6 +3,7 @@ package kernel;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.persist.PersistService;
 import model.Account;
 import module.client.ClientModule;
 import module.client.security.BlowfishGenerator;
@@ -55,8 +56,10 @@ public class Kernel {
         this.env = _env;
         this.injector = _injector;
 
+        this.injector.getInstance(PersistService.class).start();
+
+
         this.loadConfiguration();
-        this.loadKernelServices();
         this.loadModules();
 
         this.modules.forEach((k,v) -> { try { v.start(); } catch (Exception e) {
@@ -78,11 +81,6 @@ public class Kernel {
         this.setStatus(KernelStatus.STOPED);
     }
 
-    private void loadKernelServices() {
-        this.loadHibernate();
-
-        this.registerService(BlowfishGenerator.getInstance());
-    }
 
     private void loadConfiguration() {
         this.configuration.put("kernel.environment", this.env);
@@ -104,38 +102,19 @@ public class Kernel {
     }
 
     public <T> T getService(Class<T> _class) {
-        return (T) this.services.get(_class);
+        return this.injector.getInstance(_class);
     }
 
     public void registerService(Object _object) {
         this.registerService(_object.getClass(), _object);
     }
 
+    public void registerService(Class _class) {
+        this.services.put(_class, this.injector.getInstance(_class));
+    }
+
     public void registerService(Class _class, Object _object) {
         this.services.put(_class, _object);
         logger.info("Registered service : " + _object.getClass());
     }
-
-
-    private void loadHibernate() {
-        // Create registry
-        StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
-                .configure()
-                .build();
-
-        // Create MetadataSources
-        MetadataSources sources = new MetadataSources(registry);
-        sources.addAnnotatedClass(GameServer.class);
-        sources.addAnnotatedClass(Account.class);
-
-        // Create Metadata
-        Metadata metadata = sources.getMetadataBuilder().build();
-
-        // Create SessionFactory
-        SessionFactory sessionFactory = metadata.getSessionFactoryBuilder().build();
-        EntityManager em = sessionFactory.createEntityManager();
-
-        this.registerService(EntityManager.class, em);
-    }
-
 }

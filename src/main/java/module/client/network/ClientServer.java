@@ -1,6 +1,7 @@
 package module.client.network;
 
 
+import com.google.inject.Inject;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -21,12 +22,13 @@ public class ClientServer {
 
     private ChannelFuture channel;
 
-    public ClientServer(int _port, ClientChannelInitializer _channelInitializer) {
+    @Inject
+    public ClientServer(ClientChannelInitializer _channelInitializer) {
         this.channelInitializer = _channelInitializer;
-        this.port = _port;
     }
 
-    public void start() {
+    public void start(int _port) {
+        this.port = _port;
         logger.info("Starting server on port " + this.port);
 
         this.bossGroup = new NioEventLoopGroup();

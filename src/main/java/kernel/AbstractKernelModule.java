@@ -53,6 +53,11 @@ abstract public class AbstractKernelModule {
     protected final void registerService(Object _service) {
         this.kernel.registerService(_service);
     }
+
+    protected final void registerService(Class _class) {
+        this.kernel.registerService(_class);
+    }
+
     protected <T> T getService(Class<T> _class) {
         T service = (T) this.kernel.getService(_class);
         if (null == service) {

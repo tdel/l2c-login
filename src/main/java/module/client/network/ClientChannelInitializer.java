@@ -1,5 +1,6 @@
 package module.client.network;
 
+import com.google.inject.Inject;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
@@ -18,6 +19,7 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel>
     private Kernel kernel;
     private BlowfishGenerator blowfishGenerator;
 
+    @Inject
     public ClientChannelInitializer(Kernel _kernel, BlowfishGenerator _blowfishGenerator) {
         this.kernel = _kernel;
         this.blowfishGenerator = _blowfishGenerator;

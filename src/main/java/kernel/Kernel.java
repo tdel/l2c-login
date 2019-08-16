@@ -1,24 +1,15 @@
 package kernel;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.persist.PersistService;
-import model.Account;
-import module.client.ClientModule;
-import module.client.security.BlowfishGenerator;
-import module.gameserver.GameServerModule;
-import model.GameServer;
+import kernel.subsystem.AbstractKernelSubsystem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
-import javax.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Kernel {
@@ -30,8 +21,8 @@ public class Kernel {
 
     private Map<String, Object> configuration;
 
-    private Map<Class, AbstractKernelModule> modules;
-    private Map<Class, Object> services;
+    private Map<Class, AbstractKernelSubsystem> modules;
+    private List<AbstractKernelSubsystem> subsystems;
 
     private Injector injector;
 
@@ -40,7 +31,7 @@ public class Kernel {
         this.status = KernelStatus.STOPED;
         this.configuration = new HashMap<>();
         this.modules = new HashMap<>();
-        this.services = new HashMap<>();
+        this.subsystems = new ArrayList<>();
     }
 
     private void setStatus(KernelStatus _status) {
@@ -48,23 +39,22 @@ public class Kernel {
         this.status = _status;
     }
 
-    public void start(KernelEnvironment _env, Injector _injector) throws Exception {
+    public void start(KernelEnvironment _env, Injector _injector, List<AbstractKernelSubsystem> _subsystems) throws Exception {
         if (this.status != KernelStatus.STOPED) {
             throw new IllegalStateException("Kernel must be stopped to be started !");
         }
         this.setStatus(KernelStatus.STARTING);
         this.env = _env;
         this.injector = _injector;
+        this.subsystems = _subsystems;
 
         this.injector.getInstance(PersistService.class).start();
 
-
         this.loadConfiguration();
-        this.loadModules();
 
-        this.modules.forEach((k,v) -> { try { v.start(); } catch (Exception e) {
-           e.printStackTrace();
-        } });
+        for (AbstractKernelSubsystem subsystem : this.subsystems) {
+            subsystem.start();
+        }
 
         this.setStatus(KernelStatus.RUNNING);
     }
@@ -76,7 +66,9 @@ public class Kernel {
 
         this.setStatus(KernelStatus.STOPING);
 
-        this.modules.forEach((k,v) -> v.stop());
+        for (AbstractKernelSubsystem subsystem : this.subsystems) {
+            subsystem.stop();
+        }
 
         this.setStatus(KernelStatus.STOPED);
     }
@@ -96,25 +88,7 @@ public class Kernel {
     }
 
 
-    private void loadModules() {
-        this.modules.put(GameServerModule.class, this.injector.getInstance(GameServerModule.class));
-        this.modules.put(ClientModule.class, this.injector.getInstance(ClientModule.class));
-    }
-
     public <T> T getService(Class<T> _class) {
         return this.injector.getInstance(_class);
-    }
-
-    public void registerService(Object _object) {
-        this.registerService(_object.getClass(), _object);
-    }
-
-    public void registerService(Class _class) {
-        this.services.put(_class, this.injector.getInstance(_class));
-    }
-
-    public void registerService(Class _class, Object _object) {
-        this.services.put(_class, _object);
-        logger.info("Registered service : " + _object.getClass());
     }
 }

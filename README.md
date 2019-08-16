@@ -15,6 +15,7 @@ This is what you need :
 * Maven
 * Hibernate
 * Log4j2
+* Guice
 
 ## How it works
 
@@ -22,6 +23,8 @@ This projet is the "login part" of Lineage 2 emulator servers.
 
 ## TODO
 
+ - [X] Injection de dépendances (Guice)
+ - [ ] Coupler toutes les classes avec Guice
  - [ ] Ajout d'un système de configuration souple
  - [ ] Amélioration de la prise en charge des messages d'erreurs
  - [ ] Meilleur gestion des packets / Etat de connection

@@ -96,7 +96,7 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
                 return;
         }
 
-        logger.info("Executing packet " + (byte) packetId + " <" + packet.getClass().getName() + ">");
+        logger.info("Executing packet 0x" + String.format("%02X", packetId) + " <" + packet.getClass().getName() + ">");
 
         try {
             packet.execute(new PacketReader(in), this);

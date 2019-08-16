@@ -1,10 +1,13 @@
 package kernel;
 
+import com.google.inject.Inject;
+
 abstract public class AbstractKernelModule {
 
     private Kernel kernel;
     private KernelModuleStatus status;
 
+    @Inject
     public AbstractKernelModule(Kernel _kernel) {
         this.kernel = _kernel;
         this.status = KernelModuleStatus.STOPED;

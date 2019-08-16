@@ -1,6 +1,7 @@
 package module.client;
 
 
+import com.google.inject.Inject;
 import kernel.AbstractKernelModule;
 import kernel.Kernel;
 import module.client.network.ClientChannelInitializer;
@@ -20,6 +21,7 @@ public class ClientModule extends AbstractKernelModule {
 
     private ClientServer server;
 
+    @Inject
     public ClientModule(Kernel _kernel) {
         super(_kernel);
     }

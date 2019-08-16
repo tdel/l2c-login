@@ -1,13 +1,12 @@
 package module.gameserver;
 
+import com.google.inject.Inject;
 import kernel.AbstractKernelModule;
 import kernel.Kernel;
-import module.client.service.GameServers;
-
-import javax.persistence.EntityManager;
 
 public class GameServerModule extends AbstractKernelModule {
 
+    @Inject
     public GameServerModule(Kernel _kernel) {
         super(_kernel);
     }

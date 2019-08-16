@@ -1,5 +1,8 @@
 package kernel;
 
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import model.Account;
 import module.client.ClientModule;
 import module.client.security.BlowfishGenerator;
@@ -29,8 +32,10 @@ public class Kernel {
     private Map<Class, AbstractKernelModule> modules;
     private Map<Class, Object> services;
 
-    public Kernel(KernelEnvironment _env) {
-        this.env = _env;
+    private Injector injector;
+
+    @Inject
+    public Kernel() {
         this.status = KernelStatus.STOPED;
         this.configuration = new HashMap<>();
         this.modules = new HashMap<>();
@@ -42,13 +47,13 @@ public class Kernel {
         this.status = _status;
     }
 
-    public void start() throws Exception {
+    public void start(KernelEnvironment _env, Injector _injector) throws Exception {
         if (this.status != KernelStatus.STOPED) {
             throw new IllegalStateException("Kernel must be stopped to be started !");
         }
-
         this.setStatus(KernelStatus.STARTING);
-
+        this.env = _env;
+        this.injector = _injector;
 
         this.loadConfiguration();
         this.loadKernelServices();
@@ -94,8 +99,8 @@ public class Kernel {
 
 
     private void loadModules() {
-        this.modules.put(GameServerModule.class, new GameServerModule(this));
-        this.modules.put(ClientModule.class, new ClientModule(this));
+        this.modules.put(GameServerModule.class, this.injector.getInstance(GameServerModule.class));
+        this.modules.put(ClientModule.class, this.injector.getInstance(ClientModule.class));
     }
 
     public <T> T getService(Class<T> _class) {

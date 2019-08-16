@@ -1,9 +1,15 @@
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import kernel.Kernel;
 import kernel.KernelEnvironment;
+import kernel.KernelGuiceModule;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        Kernel kernel = new Kernel(KernelEnvironment.DEV);
-        kernel.start();
+
+        Injector injector = Guice.createInjector(new KernelGuiceModule());
+        Kernel kernel = injector.getInstance(Kernel.class);
+
+        kernel.start(KernelEnvironment.DEV, injector);
     }
 }

@@ -1,6 +1,7 @@
 package subsystem.gameclient.network.packets.codec;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import subsystem.gameclient.network.packets.PacketWriter;
@@ -10,6 +11,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteOrder;
 
+
+@ChannelHandler.Sharable
 public class PacketEncoder extends MessageToByteEncoder<AbstractOutPacket>
 {
     private static final Logger logger = LogManager.getLogger();
@@ -24,38 +27,26 @@ public class PacketEncoder extends MessageToByteEncoder<AbstractOutPacket>
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, AbstractOutPacket packet, ByteBuf out)
+    protected void encode(ChannelHandlerContext _ctx, AbstractOutPacket _packet, ByteBuf _out)
     {
-        if (out.order() != this.byteOrder) {
-            out = out.order(this.byteOrder);
+        if (_out.order() != this.byteOrder) {
+            _out = _out.order(this.byteOrder);
         }
 
         try {
-            packet.write(new PacketWriter(out));
-            if (out.writerIndex() > this.maxPacketSize) {
-                throw new IllegalStateException("Packet (" + packet + ") size (" + out.writerIndex() + ") is bigger than the limit (" + this.maxPacketSize + ")");
+            _packet.write(new PacketWriter(_out));
+            if (_out.writerIndex() > this.maxPacketSize) {
+                throw new IllegalStateException("Packet (" + _packet + ") size (" + _out.writerIndex() + ") is bigger than the limit (" + this.maxPacketSize + ")");
             }
         } catch (Throwable e) {
-            logger.error("Failed sending Packet("+packet+")");
+            logger.error("Failed sending Packet("+_packet+")");
             e.printStackTrace();
             // Avoid sending the packet if some exception happened
-            out.clear();
+            _out.clear();
 
             return;
         }
 
-        out.resetReaderIndex();
-
-        byte[] full = new byte[out.readableBytes()];
-        out.readBytes(full);
-
-        StringBuilder sb = new StringBuilder();
-        for (byte b : full) {
-            sb.append(String.format("%02X ", b));
-        }
-        logger.info("Encrypting packet : " + sb.toString());
-
-        out.resetReaderIndex();
-
+        logger.info("Sending <" + _packet.getClass().getName() + ">");
     }
 }

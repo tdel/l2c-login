@@ -24,14 +24,14 @@ public class PlayerLoginService {
         Account account = query.getResultList().stream().findFirst().orElse(null);
 
         if (null == account) {
-            return createLoginFailResult(PlayerLoginReason.NOT_FOUND);
+            return this.createLoginFailResult(PlayerLoginReason.NOT_FOUND);
         }
 
         this.em.detach(account);
 
         String password = this.passwordSecurity.encode(_password);
         if (!account.isPasswordEquals(password)) {
-            return createLoginFailResult(PlayerLoginReason.INVALID_PASSWORD);
+            return this.createLoginFailResult(PlayerLoginReason.INVALID_PASSWORD);
         }
 
         if (account.isBanned()) {

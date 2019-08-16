@@ -110,19 +110,6 @@ public class Crypt {
             buf.setBytes(buf.readerIndex() - block.length, block);
         }
 
-        buf.resetReaderIndex();
-
-        byte[] full = new byte[buf.readableBytes()];
-        buf.readBytes(full);
-
-        StringBuilder sb = new StringBuilder();
-        for (byte b : full) {
-            sb.append(String.format("%02X ", b));
-        }
-        logger.info("Decrypted packet : " + sb.toString());
-
-        buf.resetReaderIndex();
-
         // verify checksum also dont forget!
     }
 }

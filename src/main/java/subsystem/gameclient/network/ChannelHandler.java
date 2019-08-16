@@ -42,7 +42,6 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void sendPacket(AbstractOutPacket _packet) {
-        logger.info("Sending packet " + _packet.getClass());
         this.channel.writeAndFlush(_packet);
     }
 
@@ -64,19 +63,7 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
         this.sendPacket(new InitPacket( this.scrambledRSAKeyPair.getScrambledModulus(), this.secretKey.getEncoded(), this.getSessionId()));
     }
 
-    private ByteBuf readByteBuf(Object _msg) {
-        ByteBuf in = (ByteBuf) _msg;
 
-        if ((in == null) || !in.isReadable()) {
-            return null;
-        }
-
-        if (in.order() != ByteOrder.LITTLE_ENDIAN) {
-            in = in.order(ByteOrder.LITTLE_ENDIAN);
-        }
-
-        return in;
-    }
 
     @Override
     public void channelRead(ChannelHandlerContext _ctx, Object _msg) throws Exception {
@@ -86,10 +73,7 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-
         final int packetId = in.readUnsignedByte() & 0xFF;
-
-        logger.info("packet ID : "+packetId);
 
         AbstractInPacket packet = null;
         switch (packetId) {
@@ -112,7 +96,7 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
                 return;
         }
 
-        logger.info("Executing " + packet.getClass());
+        logger.info("Executing packet " + (byte) packetId + " <" + packet.getClass().getName() + ">");
 
         try {
             packet.execute(new PacketReader(in), this);
@@ -125,5 +109,19 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext _ctx, Throwable _cause) {
         _cause.printStackTrace();
+    }
+
+    private ByteBuf readByteBuf(Object _msg) {
+        ByteBuf in = (ByteBuf) _msg;
+
+        if ((in == null) || !in.isReadable()) {
+            return null;
+        }
+
+        if (in.order() != ByteOrder.LITTLE_ENDIAN) {
+            in = in.order(ByteOrder.LITTLE_ENDIAN);
+        }
+
+        return in;
     }
 }

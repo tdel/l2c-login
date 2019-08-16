@@ -8,6 +8,7 @@ import subsystem.gameclient.network.packets.out.LoginFail;
 
 public class AuthGameGuard extends AbstractInPacket {
 
+    @Override
     public void execute(PacketReader _reader, ChannelHandler _client) {
         int sessionId = _reader.readD();
         int data1 = _reader.readD();

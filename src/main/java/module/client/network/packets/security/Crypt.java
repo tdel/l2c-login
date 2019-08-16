@@ -5,10 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import util.Rnd;
 
-import javax.crypto.SecretKey;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 public class Crypt {
     private static final Logger logger = LogManager.getLogger();
@@ -41,8 +38,8 @@ public class Crypt {
     private final BlowfishEngine _blowfishEngine = new BlowfishEngine();
     private boolean _static = true;
 
-    public Crypt(SecretKey blowfishKey) {
-        _blowfishEngine.init(blowfishKey.getEncoded());
+    public Crypt(byte[] _encodedKey) {
+        _blowfishEngine.init(_encodedKey);
     }
 
     public void encrypt(ByteBuf buf) {

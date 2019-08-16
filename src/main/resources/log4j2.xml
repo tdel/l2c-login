@@ -9,7 +9,7 @@
         <Root level="info">
             <AppenderRef ref="Console"/>
         </Root>
-        <Logger name="org.hibernate.type.descriptor.sql" level="trace" additivity="false">
+        <Logger name="org.hibernate.type.descriptor.sql" level="info" additivity="false">
             <AppenderRef ref="Console" />
         </Logger>
     </Loggers>

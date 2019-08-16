@@ -1,5 +1,6 @@
 package module.client.security;
 
+import com.google.inject.Inject;
 import util.Rnd;
 
 import java.security.GeneralSecurityException;
@@ -14,6 +15,8 @@ public class BlowfishGenerator {
     private final KeyGenerator _blowfishKeyGenerator;
     private final ScrambledRSAKeyPair[] _scrambledRSAKeyPairs = new ScrambledRSAKeyPair[50];
 
+
+    @Inject
     public BlowfishGenerator() throws GeneralSecurityException {
         _blowfishKeyGenerator = KeyGenerator.getInstance("Blowfish");
 

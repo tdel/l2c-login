@@ -31,10 +31,16 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
     private SecretKey secretKey;
     private ScrambledRSAKeyPair scrambledRSAKeyPair;
 
+    private ConnectionState connectionState;
+
     public ChannelHandler(Kernel _kernel, SecretKey _secretKey, ScrambledRSAKeyPair _scrambledRSAKeyPair) {
         this.kernel = _kernel;
         this.secretKey = _secretKey;
         this.scrambledRSAKeyPair = _scrambledRSAKeyPair;
+    }
+
+    public void setConnectionState(ConnectionState _state ) {
+        this.connectionState = _state;
     }
 
     public ScrambledRSAKeyPair getScrambledRSAKeyPair() {
@@ -59,6 +65,9 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
 
         this.channel = _ctx.channel();
         InetSocketAddress address = (InetSocketAddress) _ctx.channel().remoteAddress();
+        this.connectionState = ConnectionState.CONNECTED;
+
+        logger.info("New client <" + address.getHostString() + ">");
 
         this.sendPacket(new InitPacket( this.scrambledRSAKeyPair.getScrambledModulus(), this.secretKey.getEncoded(), this.getSessionId()));
     }
@@ -76,24 +85,34 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
         final int packetId = in.readUnsignedByte() & 0xFF;
 
         AbstractInPacket packet = null;
-        switch (packetId) {
-            case 0x07:
-                packet = this.kernel.getService(AuthGameGuard.class);
+        switch (this.connectionState) {
+            case CONNECTED:
+                switch (packetId) {
+                    case 0x07:
+                        packet = this.kernel.getService(AuthGameGuard.class);
+                        break;
+
+                    case 0x00:
+                        packet = this.kernel.getService(RequestAuthLogin.class);
+                        break;
+                }
+
+                break;
+            case LOGGED_IN:
+                switch (packetId) {
+                    case 0x02:
+                        packet = this.kernel.getService(RequestGameServerLogin.class);
+                        break;
+                }
                 break;
 
-            case 0x00:
-                packet = this.kernel.getService(RequestAuthLogin.class);
-                break;
+        }
 
-            case 0x02:
-                packet = this.kernel.getService(RequestGameServerLogin.class);
-                break;
+        if (null == packet) {
+            logger.error("Packet not found : 0x" + String.format("%02X", packetId) + " - state " + this.connectionState);
+            in.readerIndex(in.writerIndex());
 
-            default:
-                logger.error("Packet not found : " + packetId);
-                in.readerIndex(in.writerIndex());
-
-                return;
+            return;
         }
 
         logger.info("Executing packet 0x" + String.format("%02X", packetId) + " <" + packet.getClass().getName() + ">");

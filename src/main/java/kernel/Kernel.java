@@ -7,10 +7,7 @@ import kernel.subsystem.AbstractKernelSubsystem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Kernel {
 
@@ -36,16 +33,16 @@ public class Kernel {
         this.status = _status;
     }
 
-    public void start(KernelEnvironment _env, Injector _injector, List<AbstractKernelSubsystem> _subsystems) throws Exception {
+    public void start(KernelEnvironment _env, Injector _injector, Set<Class<? extends AbstractKernelSubsystem>> _subsystems) throws Exception {
         if (this.status != KernelStatus.STOPED) {
             throw new IllegalStateException("Kernel must be stopped to be started !");
         }
         this.setStatus(KernelStatus.STARTING);
         this.env = _env;
         this.injector = _injector;
-        this.subsystems = _subsystems;
-
-        this.injector.getInstance(PersistService.class).start();
+        for (Class<? extends AbstractKernelSubsystem> subsystem : _subsystems) {
+            this.subsystems.add(this.injector.getInstance(subsystem));
+        }
 
         this.loadConfiguration();
 

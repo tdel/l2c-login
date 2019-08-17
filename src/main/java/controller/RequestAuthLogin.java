@@ -2,7 +2,7 @@ package controller;
 
 import com.google.inject.Inject;
 import subsystem.network.gameclient.ChannelHandler;
-import subsystem.network.gameclient.ConnectionState;
+import subsystem.network.gameclient.GameClientConnectionState;
 import subsystem.network.gameclient.packets.AbstractInPacket;
 import subsystem.network.gameclient.packets.PacketReader;
 import subsystem.network.gameclient.packets.out.LoginFail;
@@ -80,7 +80,7 @@ public class RequestAuthLogin extends AbstractInPacket {
             return;
         }
 
-        _client.setConnectionState(ConnectionState.LOGGED_IN);
+        _client.setConnectionState(GameClientConnectionState.LOGGED_IN);
         _client.sendPacket(new ServersList(this.gameServers.getLinkedGameServers()));
     }
 

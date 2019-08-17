@@ -31,7 +31,7 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
     private SecretKey secretKey;
     private ScrambledRSAKeyPair scrambledRSAKeyPair;
 
-    private ConnectionState connectionState;
+    private GameClientConnectionState connectionState;
 
     public ChannelHandler(Kernel _kernel, SecretKey _secretKey, ScrambledRSAKeyPair _scrambledRSAKeyPair) {
         this.kernel = _kernel;
@@ -39,7 +39,7 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
         this.scrambledRSAKeyPair = _scrambledRSAKeyPair;
     }
 
-    public void setConnectionState(ConnectionState _state ) {
+    public void setConnectionState(GameClientConnectionState _state ) {
         this.connectionState = _state;
     }
 
@@ -65,7 +65,7 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
 
         this.channel = _ctx.channel();
         InetSocketAddress address = (InetSocketAddress) _ctx.channel().remoteAddress();
-        this.connectionState = ConnectionState.CONNECTED;
+        this.connectionState = GameClientConnectionState.CONNECTED;
 
         logger.info("New client <" + address.getHostString() + ">");
 

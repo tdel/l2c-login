@@ -4,11 +4,11 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import kernel.Kernel;
 import subsystem.network.NetworkSubsystem;
-import subsystem.network.gameclient.GameClientServer;
 import subsystem.network.gameclient.GameClientChannelInitializer;
 import controller.AuthGameGuard;
 import controller.RequestAuthLogin;
 import controller.RequestGameServerLogin;
+import subsystem.network.gameclient.GameClientServer;
 import subsystem.network.gameclient.security.BlowfishGenerator;
 import subsystem.network.gameclient.security.PasswordSecurity;
 import service.gameserver.GameServers;
@@ -36,8 +36,6 @@ public class ServicesModule extends AbstractModule {
         this.bind(AuthGameGuard.class).in(Singleton.class);
         this.bind(RequestAuthLogin.class).in(Singleton.class);
         this.bind(RequestGameServerLogin.class).in(Singleton.class);
-
-
     }
 
 }

@@ -1,6 +1,6 @@
 package subsystem.network.gameclient;
 
-public enum ConnectionState {
+public enum GameClientConnectionState {
     CONNECTED,
     LOGGED_IN
 }

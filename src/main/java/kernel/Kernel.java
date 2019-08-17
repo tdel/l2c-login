@@ -20,8 +20,6 @@ public class Kernel {
     private KernelStatus status;
 
     private Map<String, Object> configuration;
-
-    private Map<Class, AbstractKernelSubsystem> modules;
     private List<AbstractKernelSubsystem> subsystems;
 
     private Injector injector;
@@ -30,7 +28,6 @@ public class Kernel {
     public Kernel() {
         this.status = KernelStatus.STOPED;
         this.configuration = new HashMap<>();
-        this.modules = new HashMap<>();
         this.subsystems = new ArrayList<>();
     }
 

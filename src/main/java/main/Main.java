@@ -6,7 +6,7 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 import kernel.Kernel;
 import kernel.KernelEnvironment;
 import kernel.subsystem.AbstractKernelSubsystem;
-import subsystem.gameclient.GameClientSubsystem;
+import subsystem.network.NetworkSubsystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public class Main {
         Injector injector = Guice.createInjector(new JpaPersistModule("default"), new ServicesModule());
 
         List<AbstractKernelSubsystem> subsystems = new ArrayList<>();
-        subsystems.add(injector.getInstance(GameClientSubsystem.class));
+        subsystems.add(injector.getInstance(NetworkSubsystem.class));
 
         Kernel kernel = injector.getInstance(Kernel.class);
 

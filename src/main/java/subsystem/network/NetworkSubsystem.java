@@ -7,7 +7,7 @@ import subsystem.network.gameclient.GameClientServer;
 
 public class NetworkSubsystem extends AbstractKernelSubsystem {
 
-    private GameClientServer server;
+    private GameClientServer gameClientServer;
 
     @Inject
     public NetworkSubsystem(Kernel _kernel) {
@@ -16,14 +16,14 @@ public class NetworkSubsystem extends AbstractKernelSubsystem {
 
     @Override
     protected void onModuleStart() throws Exception {
-        int port = this.getKernelParameter("module.player.server.port");
+        int port = this.getKernelParameter("subsystem.network.gameclient.server.port");
 
-        this.server = this.getService(GameClientServer.class);
-        this.server.start(port);
+        this.gameClientServer = this.getService(GameClientServer.class);
+        this.gameClientServer.start(port);
     }
 
     @Override
     protected void onModuleStop() {
-        this.server.stop();
+        this.gameClientServer.stop();
     }
 }

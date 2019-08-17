@@ -73,7 +73,7 @@ public class Kernel {
 
     private void loadConfiguration() {
         this.configuration.put("kernel.environment", this.env);
-        this.configuration.put("module.player.server.port", 2106);
+        this.configuration.put("subsystem.network.gameclient.server.port", 2106);
     }
 
     public <T> T getConfigParam(String _name) {

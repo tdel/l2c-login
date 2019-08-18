@@ -1,5 +1,7 @@
 package app.kernel.subsystem.network.gameclient;
 
+import com.sun.tools.jconsole.JConsoleContext;
+import controller.GameClientControllerHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -25,7 +27,6 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger logger = LogManager.getLogger();
 
-    private Kernel kernel;
     private Channel channel;
 
     private SecretKey secretKey;
@@ -33,12 +34,18 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
 
     private GameClientConnectionState connectionState;
 
-    public ChannelHandler(Kernel _kernel, SecretKey _secretKey, ScrambledRSAKeyPair _scrambledRSAKeyPair) {
-        this.kernel = _kernel;
+    private ControllerHandlerInterface handler;
+
+    public ChannelHandler(ControllerHandlerInterface _handler, SecretKey _secretKey, ScrambledRSAKeyPair _scrambledRSAKeyPair) {
+        this.handler = _handler;
         this.secretKey = _secretKey;
         this.scrambledRSAKeyPair = _scrambledRSAKeyPair;
+
     }
 
+    public GameClientConnectionState getState() {
+        return this.connectionState;
+    }
     public void setConnectionState(GameClientConnectionState _state ) {
         this.connectionState = _state;
     }
@@ -48,6 +55,8 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void sendPacket(OutgoingGameClientPacketInterface _packet) {
+        logger.info("Sending <" + _packet.getClass().getName() + ">");
+
         this.channel.writeAndFlush(_packet);
     }
 
@@ -72,57 +81,23 @@ public class ChannelHandler extends ChannelInboundHandlerAdapter {
         this.sendPacket(new InitPacket( this.scrambledRSAKeyPair.getScrambledModulus(), this.secretKey.getEncoded(), this.getSessionId()));
     }
 
-
-
     @Override
-    public void channelRead(ChannelHandlerContext _ctx, Object _msg) throws Exception {
+    public void channelRead(ChannelHandlerContext _ctx, Object _msg) {
 
         ByteBuf in = this.readByteBuf(_msg);
         if (null == in) {
             return;
         }
 
-        final int packetId = in.readUnsignedByte() & 0xFF;
-
-        IncomingGameClientPacketInterface packet = null;
-        switch (this.connectionState) {
-            case CONNECTED:
-                switch (packetId) {
-                    case 0x07:
-                        packet = this.kernel.getService(AuthGameGuard.class);
-                        break;
-
-                    case 0x00:
-                        packet = this.kernel.getService(RequestAuthLogin.class);
-                        break;
-                }
-
-                break;
-            case LOGGED_IN:
-                switch (packetId) {
-                    case 0x02:
-                        packet = this.kernel.getService(RequestGameServerLogin.class);
-                        break;
-                }
-                break;
-
-        }
-
-        if (null == packet) {
-            logger.error("Packet not found : 0x" + String.format("%02X", packetId) + " - state " + this.connectionState);
-            in.readerIndex(in.writerIndex());
-
-            return;
-        }
-
-        logger.info("Executing packet 0x" + String.format("%02X", packetId) + " <" + packet.getClass().getName() + ">");
+        PacketReader reader = new PacketReader(in);
 
         try {
-            packet.execute(new PacketReader(in), this);
+            IncomingGameClientPacketInterface packet = this.handler.handle(reader, this);
+            packet.execute(reader, this);
         } finally {
-            // We always consider that we read whole packet.
             in.readerIndex(in.writerIndex());
         }
+
     }
 
     @Override

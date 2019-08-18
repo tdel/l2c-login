@@ -43,10 +43,6 @@ public class PacketEncoder extends MessageToByteEncoder<OutgoingGameClientPacket
             e.printStackTrace();
             // Avoid sending the packet if some exception happened
             _out.clear();
-
-            return;
         }
-
-        logger.info("Sending <" + _packet.getClass().getName() + ">");
     }
 }

@@ -126,4 +126,8 @@ public final class PacketReader {
     public void readB(byte[] dst, int dstIndex, int length) {
         _buf.readBytes(dst, dstIndex, length);
     }
+
+    public short readUnsignedByte() {
+        return _buf.readUnsignedByte();
+    }
 }

@@ -2,6 +2,7 @@ package model.service.playerlogin;
 
 import com.google.inject.Inject;
 import model.entity.Account;
+import model.repository.AccountRepository;
 import model.service.playerlogin.result.PlayerLoginReason;
 import model.service.playerlogin.result.PlayerLoginResult;
 import app.kernel.subsystem.network.gameclient.security.PasswordSecurity;
@@ -12,24 +13,20 @@ import javax.persistence.TypedQuery;
 public class PlayerLoginService {
 
     private PasswordSecurity passwordSecurity;
-    private EntityManager em;
+    private AccountRepository accountRepository;
 
     @Inject
-    public PlayerLoginService(PasswordSecurity _passwordSecurity, EntityManager _em) {
+    public PlayerLoginService(PasswordSecurity _passwordSecurity, AccountRepository _accountRepository) {
         this.passwordSecurity = _passwordSecurity;
-        this.em = _em;
+        this.accountRepository = _accountRepository;
     }
 
     public PlayerLoginResult tryLogin(String _login, String _password) {
-        TypedQuery<Account> query = this.em.createQuery("SELECT a FROM Account a WHERE a.login = :login", Account.class);
-        query.setParameter("login", _login);
-        Account account = query.getResultList().stream().findFirst().orElse(null);
+        Account account = this.accountRepository.findOneByLogin(_login);
 
         if (null == account) {
             return this.createLoginFailResult(PlayerLoginReason.NOT_FOUND);
         }
-
-        this.em.detach(account);
 
         String password = this.passwordSecurity.encode(_password);
         if (!account.isPasswordEquals(password)) {

@@ -17,7 +17,7 @@ public class PacketWriter {
     }
 
 
-    public void setKey(int _value) {
+    public void setCode(String _value) {
         this.result.put("code", _value);
     }
 

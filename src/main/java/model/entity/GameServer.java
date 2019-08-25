@@ -1,5 +1,8 @@
 package model.entity;
 
+import network.gameserver.GameServerChannelHandler;
+import network.gameserver.packets.OutgoingGameServerPacketInterface;
+
 import javax.persistence.*;
 import java.net.InetSocketAddress;
 
@@ -35,9 +38,17 @@ public class GameServer {
     @Column
     private int types;
 
+    @Column(name="server_key")
+    private String serverKey;
+
+    @Transient
+    private GameServerChannelHandler handler;
+
     public GameServer() {
 
     }
+
+
 
     public int getId() {
         return this.id;
@@ -71,4 +82,28 @@ public class GameServer {
     public int isPKEnabled() {
         return 1;
     }
+
+
+    public String getServerKey() {
+        return this.serverKey;
+    }
+
+    public void attachHandler(GameServerChannelHandler _handler) {
+        this.handler = _handler;
+        this.status = 1;
+    }
+
+    public void detachHandler() {
+        this.handler = null;
+        this.status = 0;
+    }
+
+    public void sendPacket(OutgoingGameServerPacketInterface _packet) {
+        if (this.handler == null) {
+            return;
+        }
+
+        this.handler.sendPacket(_packet);
+    }
+
 }

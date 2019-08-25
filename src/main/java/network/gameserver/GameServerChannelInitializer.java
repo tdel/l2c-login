@@ -11,14 +11,12 @@ import io.netty.channel.socket.SocketChannel;
 public class GameServerChannelInitializer extends ChannelInitializer<SocketChannel>
 {
     private final GameServerController controller;
-    private final Gson gson;
     private final PacketToJSON encoder;
     private final JSONToPacket decoder;
 
     @Inject
-    public GameServerChannelInitializer(GameServerController _controller, Gson _gson, PacketToJSON _encoder, JSONToPacket _decoder) {
+    public GameServerChannelInitializer(GameServerController _controller, PacketToJSON _encoder, JSONToPacket _decoder) {
         this.controller = _controller;
-        this.gson = _gson;
         this.encoder = _encoder;
         this.decoder = _decoder;
     }
@@ -27,6 +25,6 @@ public class GameServerChannelInitializer extends ChannelInitializer<SocketChann
     protected void initChannel(SocketChannel ch) {
         ch.pipeline().addLast("decoder", this.decoder);
         ch.pipeline().addLast("encoder", this.encoder);
-        ch.pipeline().addLast("handler", new GameServerChannelHandler(this.controller, this.gson));
+        ch.pipeline().addLast("handler", new GameServerChannelHandler(this.controller));
     }
 }

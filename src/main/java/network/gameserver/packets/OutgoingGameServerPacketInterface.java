@@ -1,5 +1,5 @@
 package network.gameserver.packets;
 
 public interface OutgoingGameServerPacketInterface {
-    public void write(PacketWriter _writer);
+    void write(PacketWriter _writer);
 }

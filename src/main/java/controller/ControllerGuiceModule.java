@@ -1,14 +1,15 @@
 package controller;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
-import com.google.inject.multibindings.MapBinder;
 import controller.gameclient.AuthGameGuard;
 import controller.gameclient.RequestAuthLogin;
 import controller.gameclient.RequestGameServerLogin;
+import controller.gameserver.RequestAuth;
+import main.AbstractApplicationModule;
 import network.gameclient.packets.IncomingGameClientPacketInterface;
+import network.gameserver.packets.IncomingGameServerPacketInterface;
 
-public class ControllerGuiceModule extends AbstractModule {
+public class ControllerGuiceModule extends AbstractApplicationModule {
 
     @Override
     protected void configure() {
@@ -18,12 +19,10 @@ public class ControllerGuiceModule extends AbstractModule {
 
         this.bind(GameClientController.class).in(Singleton.class);
 
+        this.bindToMap(IncomingGameClientPacketInterface.class, AuthGameGuard.class);
+        this.bindToMap(IncomingGameClientPacketInterface.class, RequestAuthLogin.class);
+        this.bindToMap(IncomingGameClientPacketInterface.class, RequestGameServerLogin.class);
 
-
-        MapBinder<Class, IncomingGameClientPacketInterface> binder = MapBinder.newMapBinder(binder(), Class.class, IncomingGameClientPacketInterface.class);
-        binder.addBinding(AuthGameGuard.class).to(AuthGameGuard.class);
-        binder.addBinding(RequestAuthLogin.class).to(RequestAuthLogin.class);
-        binder.addBinding(RequestGameServerLogin.class).to(RequestGameServerLogin.class);
-
+        this.bindToMap(IncomingGameServerPacketInterface.class, RequestAuth.class);
     }
 }

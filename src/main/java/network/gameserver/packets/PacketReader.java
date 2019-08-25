@@ -15,4 +15,7 @@ public class PacketReader {
         return (T) this.result.get(_key);
     }
 
+    public String getCode() {
+        return (String) this.result.get("code");
+    }
 }

@@ -5,13 +5,13 @@ import network.gameclient.packets.PacketWriter;
 import model.entity.GameServer;
 
 import java.net.InetSocketAddress;
-import java.util.List;
+import java.util.Collection;
 
 public class ServersList implements OutgoingGameClientPacketInterface {
 
-    private List<GameServer> gameservers;
+    private Collection<GameServer> gameservers;
 
-    public ServersList(List<GameServer> _gameservers) {
+    public ServersList(Collection<GameServer> _gameservers) {
         this.gameservers = _gameservers;
     }
 

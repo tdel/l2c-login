@@ -1,11 +1,9 @@
 package configuration;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
-import com.google.inject.multibindings.Multibinder;
-import kernel.KernelModuleInterface;
+import main.AbstractApplicationModule;
 
-public class ConfigGuiceModule extends AbstractModule {
+public class ConfigGuiceModule extends AbstractApplicationModule {
 
     private String configFilename;
 
@@ -20,7 +18,6 @@ public class ConfigGuiceModule extends AbstractModule {
         ConfigKernelModule kernelModule = new ConfigKernelModule(this.configFilename);
         this.bind(ConfigKernelModule.class).toInstance(kernelModule);
 
-        Multibinder<KernelModuleInterface> binder = Multibinder.newSetBinder(binder(), KernelModuleInterface.class);
-        binder.addBinding().to(ConfigKernelModule.class);
+        this.bindToKernel(ConfigKernelModule.class);
     }
 }

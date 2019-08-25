@@ -9,7 +9,7 @@ import view.gameclient.LoginFail;
 import view.gameclient.ServersList;
 import model.service.playerlogin.result.PlayerLoginResult;
 import model.service.playerlogin.PlayerLoginService;
-import model.service.gameserver.GameServers;
+import model.repository.GameServerRepository;
 
 import javax.crypto.Cipher;
 import java.security.GeneralSecurityException;
@@ -20,10 +20,10 @@ import java.util.Map;
 public class RequestAuthLogin implements IncomingGameClientPacketInterface {
 
     private PlayerLoginService loginService;
-    private GameServers gameServers;
+    private GameServerRepository gameServers;
 
     @Inject
-    public RequestAuthLogin(PlayerLoginService _loginService, GameServers _gameServers) {
+    public RequestAuthLogin(PlayerLoginService _loginService, GameServerRepository _gameServers) {
         this.loginService = _loginService;
         this.gameServers = _gameServers;
     }
@@ -73,6 +73,7 @@ public class RequestAuthLogin implements IncomingGameClientPacketInterface {
                     break;
                 default:
                     System.err.println("missing : " + result.getReason().toString());
+                    return;
             }
 
             _client.sendPacket(packet);
@@ -81,7 +82,7 @@ public class RequestAuthLogin implements IncomingGameClientPacketInterface {
         }
 
         _client.setConnectionState(GameClientConnectionState.LOGGED_IN);
-        _client.sendPacket(new ServersList(this.gameServers.getLinkedGameServers()));
+        _client.sendPacket(new ServersList(this.gameServers.getAll()));
     }
 
     private byte[] decryptContent(PrivateKey _key, byte[] _raw, byte[] _raw2) throws GeneralSecurityException {

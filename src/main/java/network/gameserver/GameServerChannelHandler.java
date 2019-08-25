@@ -23,13 +23,8 @@ public class GameServerChannelHandler extends ChannelInboundHandlerAdapter {
 
     private GameServerController controller;
 
-
-    private Gson gson;
-
-
-    public GameServerChannelHandler(GameServerController _controller, Gson _gson) {
+    public GameServerChannelHandler(GameServerController _controller) {
         this.controller = _controller;
-        this.gson = _gson;
     }
 
     public void sendPacket(OutgoingGameServerPacketInterface _packet) {

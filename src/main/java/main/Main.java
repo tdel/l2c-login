@@ -1,3 +1,5 @@
+package main;
+
 import com.google.inject.Stage;
 import configuration.ConfigGuiceModule;
 import database.DatabaseGuiceModule;
@@ -6,6 +8,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import kernel.Kernel;
 import controller.ControllerGuiceModule;
+import model.repository.RepositoryGuiceModule;
 import model.service.ServiceModule;
 import network.NetworkGuiceModule;
 
@@ -16,6 +19,7 @@ public class Main {
                 new KernelGuiceModule(),
                 new ConfigGuiceModule("src/main/resources/app.properties"),
                 new DatabaseGuiceModule(),
+                new RepositoryGuiceModule(),
                 new NetworkGuiceModule(),
                 new ServiceModule(),
                 new ControllerGuiceModule()

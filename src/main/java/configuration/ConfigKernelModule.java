@@ -6,18 +6,18 @@ import kernel.KernelModuleInterface;
 
 public class ConfigKernelModule implements KernelModuleInterface {
 
-    private Config config;
-    private String filename;
+    private final Config config;
+    private final String filename;
 
     @Inject
-    public ConfigKernelModule(String _configFilename) {
+    public ConfigKernelModule(Config _config, String _configFilename) {
+        this.config = _config;
         this.filename = _configFilename;
     }
 
     @Override
     public void onBoot(Kernel _kernel) throws Exception {
-        this.config = _kernel.getService(Config.class);
-        config.load(this.filename);
+        this.config.load(this.filename);
     }
 
     @Override

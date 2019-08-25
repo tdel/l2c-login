@@ -10,13 +10,12 @@ public class DatabaseKernelModule implements KernelModuleInterface {
     private PersistService persistService;
 
     @Inject
-    public DatabaseKernelModule() {
-
+    public DatabaseKernelModule(PersistService _persistService) {
+        this.persistService = _persistService;
     }
 
     @Override
     public void onBoot(Kernel _kernel) {
-        this.persistService = _kernel.getService(PersistService.class);
         this.persistService.start();
     }
 

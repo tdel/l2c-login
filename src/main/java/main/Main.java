@@ -26,6 +26,6 @@ public class Main {
         );
 
         Kernel kernel = injector.getInstance(Kernel.class);
-        kernel.boot(injector);
+        kernel.boot();
     }
 }

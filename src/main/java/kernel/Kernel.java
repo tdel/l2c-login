@@ -2,7 +2,6 @@ package kernel;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import network.gameclient.packets.IncomingGameClientPacketInterface;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,8 +14,6 @@ public class Kernel {
     private KernelStatus status;
     private Set<KernelModuleInterface> modules;
 
-    private Injector injector;
-
     @Inject
     public Kernel(Set<KernelModuleInterface> _modules) {
         this.status = KernelStatus.STOPED;
@@ -28,12 +25,11 @@ public class Kernel {
         this.status = _status;
     }
 
-    public void boot(Injector _injector) throws Exception {
+    public void boot() throws Exception {
         if (this.status != KernelStatus.STOPED) {
             throw new IllegalStateException("Kernel must be stopped to be started !");
         }
         this.setStatus(KernelStatus.STARTING);
-        this.injector = _injector;
 
         for (KernelModuleInterface module : this.modules) {
             logger.info("Loading module : " + module.getClass().getName());
@@ -57,7 +53,4 @@ public class Kernel {
         this.setStatus(KernelStatus.STOPED);
     }
 
-    public <T> T getService(Class<T> _class) {
-        return this.injector.getInstance(_class);
-    }
 }

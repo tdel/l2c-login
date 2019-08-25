@@ -1,6 +1,5 @@
 package configuration;
 
-import com.google.inject.Singleton;
 import main.AbstractApplicationModule;
 
 public class ConfigGuiceModule extends AbstractApplicationModule {
@@ -13,9 +12,10 @@ public class ConfigGuiceModule extends AbstractApplicationModule {
 
     @Override
     protected void configure() {
-        this.bind(Config.class).in(Singleton.class);
+        Config config = new Config();
+        this.bind(Config.class).toInstance(config);
 
-        ConfigKernelModule kernelModule = new ConfigKernelModule(this.configFilename);
+        ConfigKernelModule kernelModule = new ConfigKernelModule(config, this.configFilename);
         this.bind(ConfigKernelModule.class).toInstance(kernelModule);
 
         this.bindToKernel(ConfigKernelModule.class);

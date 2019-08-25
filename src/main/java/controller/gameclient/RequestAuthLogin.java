@@ -1,10 +1,10 @@
 package controller.gameclient;
 
 import com.google.inject.Inject;
-import app.kernel.subsystem.network.gameclient.ChannelHandler;
-import app.kernel.subsystem.network.gameclient.GameClientConnectionState;
-import app.kernel.subsystem.network.gameclient.packets.IncomingGameClientPacketInterface;
-import app.kernel.subsystem.network.gameclient.packets.PacketReader;
+import network.gameclient.GameClientChannelHandler;
+import network.gameclient.GameClientConnectionState;
+import network.gameclient.packets.IncomingGameClientPacketInterface;
+import network.gameclient.packets.PacketReader;
 import view.gameclient.LoginFail;
 import view.gameclient.ServersList;
 import model.service.playerlogin.result.PlayerLoginResult;
@@ -29,7 +29,7 @@ public class RequestAuthLogin implements IncomingGameClientPacketInterface {
     }
 
     @Override
-    public void execute(PacketReader _reader, ChannelHandler _client) {
+    public void execute(PacketReader _reader, GameClientChannelHandler _client) {
 
         byte[] raw;
         byte[] raw2;

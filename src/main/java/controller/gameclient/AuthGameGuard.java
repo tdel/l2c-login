@@ -1,15 +1,15 @@
 package controller.gameclient;
 
-import app.kernel.subsystem.network.gameclient.ChannelHandler;
-import app.kernel.subsystem.network.gameclient.packets.IncomingGameClientPacketInterface;
-import app.kernel.subsystem.network.gameclient.packets.PacketReader;
+import network.gameclient.GameClientChannelHandler;
+import network.gameclient.packets.IncomingGameClientPacketInterface;
+import network.gameclient.packets.PacketReader;
 import view.gameclient.GameGuardAuth;
 import view.gameclient.LoginFail;
 
 public class AuthGameGuard implements IncomingGameClientPacketInterface {
 
     @Override
-    public void execute(PacketReader _reader, ChannelHandler _client) {
+    public void execute(PacketReader _reader, GameClientChannelHandler _client) {
         int sessionId = _reader.readD();
         int data1 = _reader.readD();
         int data2 = _reader.readD();

@@ -5,10 +5,7 @@ import model.entity.Account;
 import model.repository.AccountRepository;
 import model.service.playerlogin.result.PlayerLoginReason;
 import model.service.playerlogin.result.PlayerLoginResult;
-import app.kernel.subsystem.network.gameclient.security.PasswordSecurity;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import network.gameclient.security.PasswordSecurity;
 
 public class PlayerLoginService {
 

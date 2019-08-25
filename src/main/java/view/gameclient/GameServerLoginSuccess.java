@@ -1,7 +1,7 @@
 package view.gameclient;
 
-import app.kernel.subsystem.network.gameclient.packets.OutgoingGameClientPacketInterface;
-import app.kernel.subsystem.network.gameclient.packets.PacketWriter;
+import network.gameclient.packets.OutgoingGameClientPacketInterface;
+import network.gameclient.packets.PacketWriter;
 
 public class GameServerLoginSuccess implements OutgoingGameClientPacketInterface {
 

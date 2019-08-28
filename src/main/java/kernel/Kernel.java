@@ -1,7 +1,6 @@
 package kernel;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

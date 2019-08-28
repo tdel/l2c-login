@@ -1,9 +1,9 @@
 package kernel;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
+import main.AbstractApplicationModule;
 
-public class KernelGuiceModule extends AbstractModule {
+public class KernelGuiceModule extends AbstractApplicationModule {
 
     @Override
     protected void configure() {

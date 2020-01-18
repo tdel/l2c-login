@@ -7,6 +7,8 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import network.gameclient.packets.IncomingGameClientPacketInterface;
 import network.gameclient.packets.OutgoingGameClientPacketInterface;
 import network.gameclient.packets.PacketReader;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import view.gameclient.InitPacket;
 import network.gameclient.security.ScrambledRSAKeyPair;
 import org.apache.logging.log4j.LogManager;
@@ -30,11 +32,22 @@ public class GameClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     private GameServerControllerInterface controller;
 
+    private int waitingKeys;
+
     public GameClientChannelHandler(GameServerControllerInterface _controller, SecretKey _secretKey, ScrambledRSAKeyPair _scrambledRSAKeyPair) {
         this.controller = _controller;
         this.secretKey = _secretKey;
         this.scrambledRSAKeyPair = _scrambledRSAKeyPair;
 
+    }
+
+    public int generateWaitingKeys() {
+        this.waitingKeys = RandomUtils.nextInt();
+
+        return this.waitingKeys;
+    }
+    public int getWaitingKeys() {
+        return this.waitingKeys;
     }
 
     public GameClientConnectionState getState() {

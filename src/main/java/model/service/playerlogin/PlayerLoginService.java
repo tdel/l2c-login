@@ -5,17 +5,31 @@ import model.entity.Account;
 import model.repository.AccountRepository;
 import model.service.playerlogin.result.PlayerLoginReason;
 import model.service.playerlogin.result.PlayerLoginResult;
+import network.gameclient.GameClientChannelHandler;
 import network.gameclient.security.PasswordSecurity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerLoginService {
 
     private PasswordSecurity passwordSecurity;
     private AccountRepository accountRepository;
 
+    private List<GameClientChannelHandler> waitingAccounts;
+
     @Inject
     public PlayerLoginService(PasswordSecurity _passwordSecurity, AccountRepository _accountRepository) {
         this.passwordSecurity = _passwordSecurity;
         this.accountRepository = _accountRepository;
+        this.waitingAccounts = new ArrayList<>();
+    }
+
+    public int addWaitingAccount(GameClientChannelHandler _account) {
+        int keys = _account.generateWaitingKeys();
+        this.waitingAccounts.add(_account);
+
+        return keys;
     }
 
     public PlayerLoginResult tryLogin(String _login, String _password) {

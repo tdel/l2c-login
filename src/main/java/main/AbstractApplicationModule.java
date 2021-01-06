@@ -3,13 +3,13 @@ package main;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.multibindings.Multibinder;
-import kernel.KernelModuleInterface;
+import kernel.KernelServiceInterface;
 
 abstract public class AbstractApplicationModule extends AbstractModule {
 
 
-    protected AbstractApplicationModule bindToKernel(Class<? extends KernelModuleInterface> _class) {
-        Multibinder<KernelModuleInterface> binder = Multibinder.newSetBinder(binder(), KernelModuleInterface.class);
+    protected AbstractApplicationModule bindToKernel(Class<? extends KernelServiceInterface> _class) {
+        Multibinder<KernelServiceInterface> binder = Multibinder.newSetBinder(binder(), KernelServiceInterface.class);
         binder.addBinding().to(_class);
 
         return this;

@@ -1,28 +1,18 @@
 package main;
 
 import com.google.inject.Stage;
-import configuration.ConfigGuiceModule;
-import database.DatabaseGuiceModule;
-import kernel.KernelGuiceModule;
+import kernel.guice.KernelGuice;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import kernel.Kernel;
-import controller.ControllerGuiceModule;
-import model.repository.RepositoryGuiceModule;
-import model.service.ServiceModule;
-import network.NetworkGuiceModule;
+import game.guice.GameGuice;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
         Injector injector = Guice.createInjector(Stage.DEVELOPMENT,
-                new KernelGuiceModule(),
-                new ConfigGuiceModule("src/main/resources/app.properties"),
-                new DatabaseGuiceModule(),
-                new RepositoryGuiceModule(),
-                new NetworkGuiceModule(),
-                new ServiceModule(),
-                new ControllerGuiceModule()
+                new KernelGuice("src/main/resources/app.properties"),
+                new GameGuice()
         );
 
         Kernel kernel = injector.getInstance(Kernel.class);

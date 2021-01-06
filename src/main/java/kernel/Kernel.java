@@ -11,10 +11,10 @@ public class Kernel {
     private static final Logger logger = LogManager.getLogger();
 
     private KernelStatus status;
-    private Set<KernelModuleInterface> modules;
+    private final Set<KernelServiceInterface> modules;
 
     @Inject
-    public Kernel(Set<KernelModuleInterface> _modules) {
+    public Kernel(Set<KernelServiceInterface> _modules) {
         this.status = KernelStatus.STOPED;
         this.modules = _modules;
     }
@@ -30,7 +30,7 @@ public class Kernel {
         }
         this.setStatus(KernelStatus.STARTING);
 
-        for (KernelModuleInterface module : this.modules) {
+        for (KernelServiceInterface module : this.modules) {
             logger.info("Loading module : " + module.getClass().getName());
             module.onBoot(this);
         }
@@ -45,7 +45,7 @@ public class Kernel {
 
         this.setStatus(KernelStatus.STOPING);
 
-        for (KernelModuleInterface module : this.modules) {
+        for (KernelServiceInterface module : this.modules) {
             module.onHalt(this);
         }
 

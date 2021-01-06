@@ -1,4 +1,4 @@
-package kernel.network.gameserver;
+package game.network.server.gameserver;
 
 import kernel.network.gameserver.packets.OutgoingGameServerPacketInterface;
 import kernel.network.gameserver.packets.PacketReader;
@@ -8,21 +8,20 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import game.network.response.gameserver.InitPacket;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
 
 
-public class GameServerChannelHandler extends ChannelInboundHandlerAdapter {
+public class GSClient extends ChannelInboundHandlerAdapter {
 
     private static final Logger logger = LogManager.getLogger();
+    private final GameServerController controller;
 
     private Channel channel;
 
-    private GameServerController controller;
 
-    public GameServerChannelHandler(GameServerController _controller) {
+    public GSClient(GameServerController _controller) {
         this.controller = _controller;
     }
 
@@ -37,11 +36,11 @@ public class GameServerChannelHandler extends ChannelInboundHandlerAdapter {
         super.channelActive(_ctx);
 
         this.channel = _ctx.channel();
-        InetSocketAddress address = (InetSocketAddress) _ctx.channel().remoteAddress();
 
+        InetSocketAddress address = (InetSocketAddress) _ctx.channel().remoteAddress();
         logger.info("New client <" + address.getHostString() + ">");
 
-        this.sendPacket(new InitPacket());
+        this.controller.active(this);
     }
 
     @Override

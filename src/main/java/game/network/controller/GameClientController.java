@@ -1,13 +1,17 @@
 package game.network.controller;
 
-import kernel.network.gameclient.GameClientChannelHandler;
+import game.network.response.gameclient.InitPacket;
+import game.network.server.gameclient.GCClient;
+import game.network.server.gameclient.GCClientState;
 import kernel.network.gameclient.GameServerControllerInterface;
 import kernel.network.gameclient.packets.IncomingGameClientPacketInterface;
 import kernel.network.gameclient.packets.PacketReader;
 import com.google.inject.Inject;
+import kernel.network.gameclient.security.ScrambledRSAKeyPair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.crypto.SecretKey;
 import java.util.Set;
 
 public class GameClientController implements GameServerControllerInterface {
@@ -21,7 +25,13 @@ public class GameClientController implements GameServerControllerInterface {
     }
 
 
-    public void handle(PacketReader _reader, GameClientChannelHandler _client) {
+    public void active(GCClient _client, ScrambledRSAKeyPair _rsa, SecretKey _secretKey) {
+        _client.setState(GCClientState.CONNECTED);
+
+        _client.sendPacket(new InitPacket(_rsa.getScrambledModulus(), _secretKey.getEncoded(), _client.getSessionId()));
+    }
+
+    public void handle(PacketReader _reader, GCClient _client) {
 
         for (IncomingGameClientPacketInterface packet : this.controllers) {
             if (packet.supports(_reader, _client.getState())) {

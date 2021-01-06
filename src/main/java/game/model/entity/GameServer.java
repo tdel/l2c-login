@@ -1,6 +1,6 @@
 package game.model.entity;
 
-import kernel.network.gameserver.GameServerChannelHandler;
+import game.network.server.gameserver.GSClient;
 import kernel.network.gameserver.packets.OutgoingGameServerPacketInterface;
 
 import java.net.InetSocketAddress;
@@ -28,7 +28,7 @@ public class GameServer {
 
     private String serverKey;
 
-    private GameServerChannelHandler handler;
+    private GSClient handler;
 
     public GameServer() {
 
@@ -74,7 +74,7 @@ public class GameServer {
         return this.serverKey;
     }
 
-    public void attachHandler(GameServerChannelHandler _handler) {
+    public void attachHandler(GSClient _handler) {
         this.handler = _handler;
         this.status = 1;
     }

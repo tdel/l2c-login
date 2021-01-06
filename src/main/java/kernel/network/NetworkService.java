@@ -2,20 +2,20 @@ package kernel.network;
 
 import kernel.configuration.Config;
 import kernel.KernelServiceInterface;
-import kernel.network.gameserver.GameServerServer;
+import game.network.server.gameserver.GSServer;
 import com.google.inject.Inject;
 import kernel.Kernel;
-import kernel.network.gameclient.GameClientServer;
+import game.network.server.gameclient.GCServer;
 
 public class NetworkService implements KernelServiceInterface {
 
     private final Config config;
-    private final GameClientServer gcServer;
-    private final GameServerServer gsServer;
+    private final GCServer gcServer;
+    private final GSServer gsServer;
 
 
     @Inject
-    public NetworkService(Config _config, GameClientServer _gcServer, GameServerServer _gsServer) {
+    public NetworkService(Config _config, GCServer _gcServer, GSServer _gsServer) {
         this.config = _config;
         this.gcServer = _gcServer;
         this.gsServer = _gsServer;

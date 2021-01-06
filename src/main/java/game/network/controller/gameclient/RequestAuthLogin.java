@@ -3,8 +3,8 @@ package game.network.controller.gameclient;
 import com.google.inject.Inject;
 import game.model.entity.Account;
 import game.service.ServiceOperationResult;
-import kernel.network.gameclient.GameClientChannelHandler;
-import kernel.network.gameclient.GameClientConnectionState;
+import game.network.server.gameclient.GCClient;
+import game.network.server.gameclient.GCClientState;
 import kernel.network.gameclient.packets.IncomingGameClientPacketInterface;
 import kernel.network.gameclient.packets.PacketReader;
 import game.network.response.gameclient.LoginFail;
@@ -12,9 +12,7 @@ import game.network.response.gameclient.ServersList;
 import game.service.playerlogin.PlayerLoginService;
 import game.model.repository.GameServerRepository;
 
-import javax.crypto.Cipher;
 import java.security.GeneralSecurityException;
-import java.security.PrivateKey;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,8 +28,8 @@ public class RequestAuthLogin implements IncomingGameClientPacketInterface {
     }
 
     @Override
-    public boolean supports(PacketReader _reader, GameClientConnectionState _state) {
-        if (_state != GameClientConnectionState.CONNECTED) {
+    public boolean supports(PacketReader _reader, GCClientState _state) {
+        if (_state != GCClientState.CONNECTED) {
             return false;
         }
 
@@ -40,16 +38,15 @@ public class RequestAuthLogin implements IncomingGameClientPacketInterface {
 
 
     @Override
-    public void execute(PacketReader _reader, GameClientChannelHandler _client) {
+    public void execute(PacketReader _reader, GCClient _client) {
 
         Map<String, String> parameters = this.parseRequest(_reader, _client);
         if (null == parameters) {
             return;
         }
 
-        ServiceOperationResult<Account> result = this.loginService.tryLogin(parameters.get("login"), parameters.get("password"));
+        ServiceOperationResult<Account> result = this.loginService.checkCredentials(parameters.get("login"), parameters.get("password"));
         if (!result.isSuccess()) {
-
             if (result.errorEnumEquals(PlayerLoginService.LoginReason.NOT_FOUND) || result.errorEnumEquals(PlayerLoginService.LoginReason.INVALID_PASSWORD)) {
                 _client.sendPacket(new LoginFail(LoginFail.LoginFailReason.REASON_USER_OR_PASS_WRONG));
             } else {
@@ -59,27 +56,27 @@ public class RequestAuthLogin implements IncomingGameClientPacketInterface {
             return;
         }
 
-        _client.setConnectionState(GameClientConnectionState.LOGGED_IN);
+        _client.attachAccount(result.target());
+        _client.setState(GCClientState.LOGGED_IN);
         _client.sendPacket(new ServersList(this.gameServers.getAll()));
     }
 
-    private Map<String, String> parseRequest(PacketReader _reader, GameClientChannelHandler _client) {
+    private Map<String, String> parseRequest(PacketReader _reader, GCClient _client) {
         byte[] raw;
         byte[] raw2;
         boolean newAuth;
 
         byte[] decrypted;
-        PrivateKey privateKey = _client.getScrambledRSAKeyPair().getPrivateKey();
 
         try {
             if (_reader.getReadableBytes() >= (128 + 128 + 4 + 16)) {
                 raw = _reader.readB(128);
                 raw2 = _reader.readB(128);
-                decrypted = this.decryptContent(privateKey, raw, raw2);
+                decrypted = _client.decryptContent(raw, raw2);
                 newAuth = true;
             } else if (_reader.getReadableBytes() >= (128 + 4 + 16)) {
                 raw = _reader.readB(128);
-                decrypted = this.decryptContent(privateKey, raw);
+                decrypted = _client.decryptContent(raw);
                 newAuth = false;
             } else {
                 throw new IllegalArgumentException();
@@ -95,27 +92,6 @@ public class RequestAuthLogin implements IncomingGameClientPacketInterface {
         byte[] gameGuard = _reader.readB(16);
 
         return this.extractParameters(decrypted, newAuth);
-    }
-
-    private byte[] decryptContent(PrivateKey _key, byte[] _raw, byte[] _raw2) throws GeneralSecurityException {
-        byte[] decrypted = new byte[256];
-
-        final Cipher rsaCipher = Cipher.getInstance("RSA/ECB/NoPadding");
-        rsaCipher.init(Cipher.DECRYPT_MODE, _key);
-        rsaCipher.doFinal(_raw, 0, 128, decrypted, 0);
-        rsaCipher.doFinal(_raw2, 0, 128, decrypted, 128);
-
-        return decrypted;
-    }
-
-    private byte[] decryptContent(PrivateKey _key, byte[] _raw) throws GeneralSecurityException {
-        byte[] decrypted = new byte[128];
-
-        final Cipher rsaCipher = Cipher.getInstance("RSA/ECB/NoPadding");
-        rsaCipher.init(Cipher.DECRYPT_MODE, _key);
-        rsaCipher.doFinal(_raw, 0, 128, decrypted, 0);
-
-        return decrypted;
     }
 
     private Map<String, String> extractParameters(byte[] _decrypted, boolean _newAuth) {

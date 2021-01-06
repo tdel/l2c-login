@@ -1,9 +1,9 @@
 package kernel.network.gameclient.packets;
 
-import kernel.network.gameclient.GameClientChannelHandler;
-import kernel.network.gameclient.GameClientConnectionState;
+import game.network.server.gameclient.GCClient;
+import game.network.server.gameclient.GCClientState;
 
 public interface IncomingGameClientPacketInterface {
-    public void execute(PacketReader _reader, GameClientChannelHandler _client);
-    public boolean supports(PacketReader _reader, GameClientConnectionState _state);
+    public void execute(PacketReader _reader, GCClient _client);
+    public boolean supports(PacketReader _reader, GCClientState _state);
 }

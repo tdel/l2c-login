@@ -1,7 +1,7 @@
 package game.network.controller.gameclient;
 
-import kernel.network.gameclient.GameClientChannelHandler;
-import kernel.network.gameclient.GameClientConnectionState;
+import game.network.server.gameclient.GCClient;
+import game.network.server.gameclient.GCClientState;
 import kernel.network.gameclient.packets.IncomingGameClientPacketInterface;
 import kernel.network.gameclient.packets.PacketReader;
 import game.network.response.gameclient.GameGuardAuth;
@@ -10,8 +10,8 @@ import game.network.response.gameclient.LoginFail;
 public class AuthGameGuard implements IncomingGameClientPacketInterface {
 
     @Override
-    public boolean supports(PacketReader _reader, GameClientConnectionState _state) {
-        if (_state != GameClientConnectionState.CONNECTED) {
+    public boolean supports(PacketReader _reader, GCClientState _state) {
+        if (_state != GCClientState.CONNECTED) {
             return false;
         }
 
@@ -19,7 +19,7 @@ public class AuthGameGuard implements IncomingGameClientPacketInterface {
     }
 
     @Override
-    public void execute(PacketReader _reader, GameClientChannelHandler _client) {
+    public void execute(PacketReader _reader, GCClient _client) {
         int sessionId = _reader.readD();
         int data1 = _reader.readD();
         int data2 = _reader.readD();

@@ -2,7 +2,8 @@ package game.network.controller;
 
 
 import com.google.inject.Inject;
-import kernel.network.gameserver.GameServerChannelHandler;
+import game.network.response.gameserver.InitPacket;
+import game.network.server.gameserver.GSClient;
 import kernel.network.gameserver.packets.IncomingGameServerPacketInterface;
 import kernel.network.gameserver.packets.PacketReader;
 
@@ -17,7 +18,11 @@ public class GameServerController {
         this.controllers = _controllers;
     }
 
-    public void handle(PacketReader _reader, GameServerChannelHandler _handler) {
+    public void active(GSClient _handler) {
+        _handler.sendPacket(new InitPacket());
+    }
+
+    public void handle(PacketReader _reader, GSClient _handler) {
 
         String code = _reader.getCode();
         if (null == code) {

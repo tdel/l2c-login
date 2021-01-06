@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import game.model.entity.GameServer;
 import game.model.repository.GameServerRepository;
 import kernel.network.gameserver.packets.PacketReader;
-import kernel.network.gameserver.GameServerChannelHandler;
+import game.network.server.gameserver.GSClient;
 import kernel.network.gameserver.packets.IncomingGameServerPacketInterface;
 import game.network.response.gameserver.AuthResult;
 
@@ -23,7 +23,7 @@ public class RequestAuth implements IncomingGameServerPacketInterface {
     }
 
     @Override
-    public void execute(PacketReader _reader, GameServerChannelHandler _client) {
+    public void execute(PacketReader _reader, GSClient _client) {
         String key = _reader.get("key");
 
         GameServer gs = this.gsRepository.findOneByKey(key);

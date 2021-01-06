@@ -7,6 +7,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,14 +16,18 @@ abstract public class NetworkServer {
 
     private static final Logger logger = LogManager.getLogger();
 
-    private ChannelInitializer channelInitializer;
+    private ChannelInitializer<SocketChannel> channelInitializer;
     private int port;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
 
     private ChannelFuture channel;
 
-    public NetworkServer(ChannelInitializer _channelInitializer) {
+    public NetworkServer() {
+
+    }
+
+    protected void setChannelInitializer(ChannelInitializer<SocketChannel> _channelInitializer) {
         this.channelInitializer = _channelInitializer;
     }
 

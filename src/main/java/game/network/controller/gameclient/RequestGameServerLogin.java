@@ -2,8 +2,8 @@ package game.network.controller.gameclient;
 
 import com.google.inject.Inject;
 import game.service.playerlogin.PlayerLoginService;
-import kernel.network.gameclient.GameClientChannelHandler;
-import kernel.network.gameclient.GameClientConnectionState;
+import game.network.server.gameclient.GCClient;
+import game.network.server.gameclient.GCClientState;
 import kernel.network.gameclient.packets.IncomingGameClientPacketInterface;
 import kernel.network.gameclient.packets.PacketReader;
 import game.network.response.gameclient.GameServerLoginSuccess;
@@ -18,8 +18,8 @@ public class RequestGameServerLogin implements IncomingGameClientPacketInterface
     }
 
     @Override
-    public boolean supports(PacketReader _reader, GameClientConnectionState _state) {
-        if (_state != GameClientConnectionState.LOGGED_IN) {
+    public boolean supports(PacketReader _reader, GCClientState _state) {
+        if (_state != GCClientState.LOGGED_IN) {
             return false;
         }
 
@@ -27,7 +27,7 @@ public class RequestGameServerLogin implements IncomingGameClientPacketInterface
     }
 
     @Override
-    public void execute(PacketReader _reader, GameClientChannelHandler _client) {
+    public void execute(PacketReader _reader, GCClient _client) {
         int sessionKey1 = _reader.readD();
         int sessionKey2 = _reader.readD();
         int serverId = _reader.readC();

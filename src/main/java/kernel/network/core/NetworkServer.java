@@ -16,23 +16,18 @@ abstract public class NetworkServer {
 
     private static final Logger logger = LogManager.getLogger();
 
-    private ChannelInitializer<SocketChannel> channelInitializer;
     private int port;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
 
     private ChannelFuture channel;
 
-    public NetworkServer() {
 
-    }
+    abstract protected ChannelInitializer<SocketChannel> generateChannelInitializer();
+    abstract protected int getPort();
 
-    protected void setChannelInitializer(ChannelInitializer<SocketChannel> _channelInitializer) {
-        this.channelInitializer = _channelInitializer;
-    }
-
-    public void start(int _port) {
-        this.port = _port;
+    public void start() {
+        this.port = this.getPort();
         logger.info("Starting server on port " + this.port);
 
         this.bossGroup = new NioEventLoopGroup();
@@ -41,7 +36,7 @@ abstract public class NetworkServer {
         ServerBootstrap b = new ServerBootstrap(); // (2)
         b.group(this.bossGroup, this.workerGroup)
                 .channel(NioServerSocketChannel.class) // (3)
-                .childHandler(this.channelInitializer)
+                .childHandler(this.generateChannelInitializer())
                 .option(ChannelOption.SO_BACKLOG, 128)          // (5)
                 .childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
         this.channel = b.bind(this.port);

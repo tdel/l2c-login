@@ -25,7 +25,7 @@ This projet is the "login part" of Lineage 2 emulator servers.
 
  - [X] Injection de dépendances (Guice)
  - [X] Coupler toutes les classes avec Guice
- - [ ] Ajout d'un système de kernel.configuration souple
+ - [ ] Ajout d'un système de configuration souple
  - [ ] Amélioration de la prise en charge des messages d'erreurs sur login player
  - [X] Meilleur gestion des packets / Etat de connection
  - [X] Meilleur gestion des logs

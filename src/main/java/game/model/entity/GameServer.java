@@ -1,7 +1,7 @@
 package game.model.entity;
 
-import game.network.server.gameserver.GSClient;
-import kernel.network.gameserver.packets.OutgoingGameServerPacketInterface;
+import network.gameserver.packets.OutgoingGameServerPacketInterface;
+import network.server.gameserver.GSClient;
 
 import java.net.InetSocketAddress;
 

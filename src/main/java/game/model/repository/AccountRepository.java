@@ -1,16 +1,16 @@
 package game.model.repository;
 
-import kernel.database.DatabaseService;
+import database.DatabaseLoadableKernel;
 import game.model.entity.Account;
 
 import javax.inject.Inject;
 
 public class AccountRepository {
 
-    private final DatabaseService database;
+    private final DatabaseLoadableKernel database;
 
     @Inject
-    public AccountRepository(DatabaseService database) {
+    public AccountRepository(DatabaseLoadableKernel database) {
         this.database = database;
     }
 

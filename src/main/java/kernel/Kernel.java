@@ -1,22 +1,20 @@
 package kernel;
 
-import com.google.inject.Inject;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Stage;
+import guice.AppGuice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.*;
 
 public class Kernel {
 
     private static final Logger logger = LogManager.getLogger();
 
-    private KernelStatus status;
-    private final Set<KernelServiceInterface> modules;
+    private KernelStatus status = KernelStatus.STOPED;
 
-    @Inject
-    public Kernel(Set<KernelServiceInterface> _modules) {
-        this.status = KernelStatus.STOPED;
-        this.modules = _modules;
+    public Kernel() {
+
     }
 
     private void setStatus(KernelStatus _status) {
@@ -28,14 +26,18 @@ public class Kernel {
         if (this.status != KernelStatus.STOPED) {
             throw new IllegalStateException("Kernel must be stopped to be started !");
         }
+
         this.setStatus(KernelStatus.STARTING);
 
-        for (KernelServiceInterface module : this.modules) {
-            logger.info("Loading module : " + module.getClass().getName());
-            module.onBoot(this);
-        }
+        Injector injector = Guice.createInjector(Stage.DEVELOPMENT,
+                new AppGuice("src/main/resources/app.properties")
+        );
 
         this.setStatus(KernelStatus.RUNNING);
+
+        injector.getInstance(KernelInit.class).start(this);
+
+        logger.info("READY");
     }
 
     public void halt() {
@@ -44,10 +46,6 @@ public class Kernel {
         }
 
         this.setStatus(KernelStatus.STOPING);
-
-        for (KernelServiceInterface module : this.modules) {
-            module.onHalt(this);
-        }
 
         this.setStatus(KernelStatus.STOPED);
     }
